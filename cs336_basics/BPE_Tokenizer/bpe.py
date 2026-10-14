@@ -90,7 +90,8 @@ def train(text_path, vocab_size, special_token):
     else:
         parts = [text]
 
-    for part in parts:
+    for idx, part in enumerate(parts):
+        print("[Pre-Training] it", idx + 1, "/ total ", len(parts))
         for match in re.finditer(PAT, part):
             fragment = match.group(0)
             if fragment in counts:
@@ -108,7 +109,8 @@ def train(text_path, vocab_size, special_token):
         counts_bytes[res_tuple] = cnt
 
     counts_pair = find_counts_pair(counts_bytes)
-    for _ in range(vocab_size - least_vocab_size):
+    for it in range(vocab_size - least_vocab_size):
+        print("[Training] it", it + 1, "/ total ", vocab_size - least_vocab_size)
         if not counts_pair:
             break
 
@@ -123,9 +125,9 @@ def train(text_path, vocab_size, special_token):
 
 
 def main():
-    text_path = "data/text.txt"
+    text_path = "data/TinyStoriesV2-GPT4-train.txt"
     special_token = ["<|endoftext|>"]
-    vocab_size = 30000
+    vocab_size = 10000
     vocab, merges = train(text_path, vocab_size, special_token)
     print(len(vocab))
     print(merges)
