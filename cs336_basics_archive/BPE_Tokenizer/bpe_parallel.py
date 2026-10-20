@@ -3,6 +3,7 @@ import os
 from typing import BinaryIO
 from multiprocessing import Pool
 import time
+import json
 
 
 def find_merge_pair(counts_pair):
@@ -112,6 +113,8 @@ def pre_train(text, special_token):
     counts = {}
     PAT = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 
+    # 避免共同前缀的special_token先匹配短的，优先匹配长的
+    special_token = sorted(special_token, key=len, reverse=True)
     # re.escape 起到转义作用 比如正则的.表示任意字符 用这个可以把.转义,用于匹配.,转成\.
     # join的作用是把多个连接起来,最开始的"|"是分隔符
     parts_separators_pat = "|".join(re.escape(s) for s in special_token)
@@ -237,14 +240,37 @@ def train(text_path, vocab_size, special_token, num_precesses):
     return vocab, merges
 
 
+def save_data_json(vocab, merges):
+    # bytes 不能直接导出到json
+    vocab_json = {}
+    merges_json = []
+    for idx, str_bytes in vocab.items():
+        vocab_json[idx] = list(str_bytes)
+
+    for merge in merges:
+        part1, part2 = merge
+        merge_json = []
+        merge_json.append(list(part1))
+        merge_json.append(list(part2))
+        merges_json.append(merge_json)
+
+    with open("data/text_vocab.json", "w", encoding="utf-8") as file:
+        json.dump(vocab_json, file, indent=2)
+
+    with open("data/text_merges.json", "w", encoding="utf-8") as file:
+        json.dump(merges_json, file, indent=2)
+
+
 def main():
-    text_path = "data/TinyStoriesV2-GPT4-train.txt"
+    text_path = "data/text.txt"
     special_token = ["<|endoftext|>"]
     vocab_size = 10000
     num_precesses = 16
     vocab, merges = train(text_path, vocab_size, special_token, num_precesses)
-    print(len(vocab))
-    print(len(merges))
+
+    save_data_json(vocab, merges)
+    print(vocab)
+    print(merges)
 
 
 if __name__ == "__main__":
