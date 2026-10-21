@@ -120,19 +120,19 @@ def main():
     merges = [(b"a", b"b"), (b"b", b"c"), (b"ab", b"c")]
     special_tokens = ["<|endoftext|>", "<|endoftext|><|endoftext|>"]
 
-    tokenizer = Tokenizer(vocab, merges, special_tokens)
+    # tokenizer = Tokenizer(vocab, merges, special_tokens)
 
-    text_input = "abc<|endoftext|><|endoftext|>abc<|endoftext|>"
-    text_encode = tokenizer.encode(text_input)
-    print(text_encode)
+    # text_input = "abc<|endoftext|><|endoftext|>abc<|endoftext|>"
+    # text_encode = tokenizer.encode(text_input)
+    # print(text_encode)
 
-    tokens_input = []
-    tokens_decode = tokenizer.decode(tokens_input)
-    print(tokens_decode)
+    # tokens_input = []
+    # tokens_decode = tokenizer.decode(tokens_input)
+    # print(tokens_decode)
 
-    # tokenizer = Tokenizer.from_files("data/text_vocab.json", "data/text_merges.json")
-    # print(tokenizer.vocab)
-    # print(tokenizer.merges)
+    tokenizer = Tokenizer.from_files("data/text_vocabs.json", "data/text_merges.json")
+    print(tokenizer.vocab)
+    print(tokenizer.merges)
 
 
 if __name__ == "__main__":
